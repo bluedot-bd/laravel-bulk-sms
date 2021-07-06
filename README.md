@@ -11,7 +11,7 @@ A simple Bulk SMS (HTTP API) for Laravel (with notification support).
 You can install the package via composer:
 
 ```bash
-composer require bluedot/laravel-bulk-sms
+composer require bluedot-bd/laravel-bulk-sms
 ```
 
 add followings in `.env` :<br>
