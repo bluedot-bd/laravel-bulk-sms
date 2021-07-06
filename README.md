@@ -1,7 +1,7 @@
 # Laravel Bulk SMS (HTTP API)
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/bluedot-bd/laravel-bulk-sms.svg?style=flat-square)](https://packagist.org/packages/bluedot/laravel-bulk-sms)
-[![Total Downloads](https://img.shields.io/packagist/dt/bluedot-bd/laravel-bulk-sms.svg?style=flat-square)](https://packagist.org/packages/bluedot/laravel-bulk-sms)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/bluedot-bd/laravel-bulk-sms.svg?style=flat-square)](https://packagist.org/packages/bluedot-bd/laravel-bulk-sms)
+[![Total Downloads](https://img.shields.io/packagist/dt/bluedot-bd/laravel-bulk-sms.svg?style=flat-square)](https://packagist.org/packages/bluedot-bd/laravel-bulk-sms)
 
 A simple Bulk SMS (HTTP API) for Laravel (with notification support). 
 
