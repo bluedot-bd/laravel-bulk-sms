@@ -1,13 +1,14 @@
 <?php
 
 namespace Bluedot\LaravelBulkSms;
-use Log;
-use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Facades\Http;
+
 use Bluedot\LaravelBulkSms\BulkSms;
+use Http;
+use Illuminate\Support\Facades\Facade;
+use Log;
 
 class LaravelBulkSmsFacade extends Facade
-{   
+{
     /**
      * The phone number notifications should be sent to.
      *
@@ -41,18 +42,25 @@ class LaravelBulkSmsFacade extends Facade
      * @param array $lines
      * @return void
      */
-    function __construct($lines = [])
+    public function __construct($lines = [])
     {
-        $this->lines = $lines;
-        $this->provider = config('laravel-bulk-sms.provider');
-        $this->base_url = config('laravel-bulk-sms.endpoint');
-        $this->method = strtolower(config('laravel-bulk-sms.method'));
+        $this->lines                                             = $lines;
+        $this->provider                                          = config('laravel-bulk-sms.provider');
+        $this->base_url                                          = config('laravel-bulk-sms.endpoint');
+        $this->method                                            = strtolower(config('laravel-bulk-sms.method'));
         $this->params[config('laravel-bulk-sms.username_param')] = config('laravel-bulk-sms.username');
         $this->params[config('laravel-bulk-sms.password_param')] = config('laravel-bulk-sms.password');
-        $this->params['api_key'] = config('laravel-bulk-sms.api_key');
-        $this->params['api_secret'] = config('laravel-bulk-sms.api_secret');
-        $this->params['from'] = config('laravel-bulk-sms.from');
-        $this->params = array_filter($this->params);
+        $this->params['api_key']                                 = config('laravel-bulk-sms.api_key');
+        $this->params['api_secret']                              = config('laravel-bulk-sms.api_secret');
+        $this->params[config('laravel-bulk-sms.from_param')]     = config('laravel-bulk-sms.from');
+        $this->params                                            = array_filter($this->params);
+
+        $extra_param    = parse_url($this->base_url, PHP_URL_QUERY);
+        $this->base_url = str_replace("?" . $extra_param, '', $this->base_url);
+        parse_str($extra_param, $extra_param);
+        foreach ($extra_param as $pk => $pv) {
+            $this->params[$pk] = $pv;
+        }
     }
 
     /**
@@ -99,7 +107,7 @@ class LaravelBulkSmsFacade extends Facade
      * Add new Line
      * @param  string  $line
      */
-    public function line($line=''): self
+    public function line($line = ''): self
     {
         $this->lines[] = $line;
         return $this;
@@ -110,18 +118,19 @@ class LaravelBulkSmsFacade extends Facade
      * @param  string  $to
      * @param  string  $sms
      * @param  string/boolean $from
-     * @return JSON    
+     * @return JSON
      */
-    public function send(){
-        if(!$this->from){
-            $this->params['from'] = config('laravel-bulk-sms.from');
+    public function send()
+    {
+        if (!$this->from) {
+            $this->params[config('laravel-bulk-sms.from_param', 'from')] = config('laravel-bulk-sms.from');
         }
-        $this->params['to'] = $this->to;
+        $this->params[config('laravel-bulk-sms.to_param', 'to')] = $this->to;
 
         $lines = implode("\n", $this->lines);
-        if($lines){
+        if ($lines) {
             $this->params[config('laravel-bulk-sms.message_param')] = $lines;
-        }else{
+        } else {
             $this->params[config('laravel-bulk-sms.message_param')] = $this->message;
         }
         return $this->send_or_dry_run();
@@ -131,25 +140,27 @@ class LaravelBulkSmsFacade extends Facade
      * Real or Demo Send
      * @return [type] [description]
      */
-    public function send_or_dry_run(){
-        $dry = config('laravel-bulk-sms.dry');
+    public function send_or_dry_run()
+    {
+        $dry           = config('laravel-bulk-sms.dry');
         $authorization = config('laravel-bulk-sms.authorization');
-        if($dry){
-            Log::info(['type'=>'sending demo sms', 'params'=>$this->params, 'url'=> $this->base_url . "?" . http_build_query($this->params)]);
+        if ($dry) {
+            Log::info(['type' => 'sending demo sms', 'params' => $this->params, 'url' => $this->base_url . "?" . http_build_query($this->params)]);
             return true;
-        }else{
-            
-            $http = new Http();
-            if($authorization){
+        } else {
+
+            $http = Http::accept('application/json');
+            if ($authorization) {
                 $http->withHeaders(['Authorization' => $authorization]);
             }
-            
-            if($this->method=='get'){
+
+            if ($this->method == 'get') {
                 $response = $http->get($this->base_url, $this->params);
-            }else{
+            } else {
                 $response = $http->post($this->base_url, $this->params);
             }
-            
+
+            Log::info(['type' => 'sending sms', 'params' => $this->params, 'response' => $response->json()]);
             return $response->json();
         }
     }
