@@ -1,7 +1,7 @@
 {
     "name": "bluedot-bd/laravel-bulk-sms",
     "description": "Bulk SMS (HTTP API) integration for Laravel (with notification support)",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "keywords": [
         "bluedot-bd",
         "laravel-bulk-sms"
@@ -18,11 +18,11 @@
     ],
     "require": {
         "php": "^7.0|^8.0",
-        "illuminate/support": "~8.0"
+        "illuminate/support": "*"
     },
     "require-dev": {
-        "orchestra/testbench": "^6.0",
-        "phpunit/phpunit": "^9.0"
+        "orchestra/testbench": "*",
+        "phpunit/phpunit": "*"
     },
     "autoload": {
         "psr-4": {
