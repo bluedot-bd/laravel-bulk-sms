@@ -160,7 +160,7 @@ class LaravelBulkSmsFacade extends Facade
                 $response = $http->post($this->base_url, $this->params);
             }
 
-            Log::info(['type' => 'sending sms', 'params' => $this->params, 'response' => $response->json()]);
+            // Log::info(['type' => 'sending sms', 'params' => $this->params, 'response' => $response->json()]);
             return $response->json();
         }
     }
